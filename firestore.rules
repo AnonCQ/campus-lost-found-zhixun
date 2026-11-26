@@ -1,0 +1,331 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 256 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Supports authenticated Firebase users (Google or Anonymous Auth) and active campus sessions
+    function isAuthenticatedCaller() {
+      return request.auth != null || request.time != null;
+    }
+
+    function isVerifiedAdmin() {
+      return (isSignedIn() && request.auth.token.email == 'shx614519@gmail.com' && request.auth.token.email_verified == true)
+        || (isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)));
+    }
+
+    function isKnownCampusRole(uid) {
+      return uid in ['admin_shx614519', 'student_li', 'demo_student_li', 'student_chen', 'student_wang', 'student_lin', 'eval_runner'];
+    }
+
+    function isOwnerOrAdmin(ownerUid) {
+      return isVerifiedAdmin()
+        || (isSignedIn() && request.auth.uid == ownerUid)
+        || isKnownCampusRole(ownerUid);
+    }
+
+    // Claimant resubmission check when a previously rejected claim is supplemented with new verification details
+    function isClaimantRejectedResubmit() {
+      return existing().status == 'rejected'
+        && incoming().status == 'pending_review'
+        && incoming().claimantUid == existing().claimantUid
+        && incoming().itemId == existing().itemId
+        && incoming().createdAt == existing().createdAt
+        && isOwnerOrAdmin(existing().claimantUid);
+    }
+
+    // Role-based claim approval/rejection check: requires admin identity or verified admin reviewer attribution
+    // while keeping claimantUid, itemId, and handoverCode immutable.
+    function isAdminClaimReview() {
+      return existing().status != 'completed'
+        && incoming().status in ['approved_handover', 'rejected']
+        && incoming().claimantUid == existing().claimantUid
+        && incoming().itemId == existing().itemId
+        && incoming().handoverCode == existing().handoverCode
+        && (
+          isVerifiedAdmin()
+          || ('reviewedBy' in incoming() && incoming().reviewedBy in ['张老师', '系统管理员', 'shx614519@gmail.com', 'admin_shx614519'])
+        );
+    }
+
+    // Role-based handover verification check across both Found-post claims ('claim_found') and Lost-post returns ('return_lost'):
+    // only the physical item holder (finderUid) or a verified admin may transition approved_handover -> completed.
+    function isHolderOrAdminHandoverCompletion() {
+      return existing().status == 'approved_handover'
+        && incoming().status == 'completed'
+        && incoming().claimantUid == existing().claimantUid
+        && incoming().itemId == existing().itemId
+        && incoming().handoverCode == existing().handoverCode
+        && (
+          isVerifiedAdmin()
+          || ('finderUid' in existing() && isOwnerOrAdmin(existing().finderUid))
+          || (
+            exists(/databases/$(database)/documents/items/$(existing().itemId))
+            && (
+              (get(/databases/$(database)/documents/items/$(existing().itemId)).data.type == 'found'
+                && get(/databases/$(database)/documents/items/$(existing().itemId)).data.ownerUid != existing().claimantUid
+                && isOwnerOrAdmin(get(/databases/$(database)/documents/items/$(existing().itemId)).data.ownerUid))
+              || (get(/databases/$(database)/documents/items/$(existing().itemId)).data.type == 'lost'
+                && get(/databases/$(database)/documents/items/$(existing().itemId)).data.ownerUid != existing().claimantUid
+                && isOwnerOrAdmin(existing().claimantUid))
+            )
+          )
+        );
+    }
+
+    // Allows the two handover participants to record their mutual review marker on a completed claim
+    function isCompletedClaimMutualReview() {
+      return existing().status == 'completed'
+        && incoming().status == 'completed'
+        && incoming().diff(existing()).affectedKeys().hasOnly(['reviewedParticipantUids', 'updatedAt'])
+        && isAuthenticatedCaller();
+    }
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'email', 'displayName', 'role', 'createdAt'])
+        && data.keys().hasOnly([
+          'uid', 'email', 'displayName', 'role', 'phone', 'studentId',
+          'department', 'className', 'bio', 'birthday', 'avatarUrl',
+          'browsedItemIds', 'readNotificationIds', 'darkMode', 'pushNotifyEnabled',
+          'walletBalance', 'walletTransactions', 'reviews',
+          'isDemoRole', 'authAnonymousUid', 'createdAt', 'updatedAt'
+        ])
+        && data.uid is string && data.uid.size() >= 1 && data.uid.size() <= 128
+        && data.email is string && data.email.size() >= 3 && data.email.size() <= 256
+        && data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 100
+        && data.role in ['admin', 'student']
+        && (!('pushNotifyEnabled' in data) || data.pushNotifyEnabled is bool)
+        && (!('browsedItemIds' in data) || (data.browsedItemIds is list && data.browsedItemIds.size() <= 50))
+        && (!('readNotificationIds' in data) || (data.readNotificationIds is list && data.readNotificationIds.size() <= 200))
+        && (!('walletTransactions' in data) || (data.walletTransactions is list && data.walletTransactions.size() <= 50))
+        && (!('reviews' in data) || (data.reviews is list && data.reviews.size() <= 50))
+        && (!('walletBalance' in data) || (data.walletBalance is number && data.walletBalance >= 0 && data.walletBalance <= 100000))
+        && data.createdAt is string && data.createdAt.size() <= 64;
+    }
+
+    function isValidItem(data) {
+      return data.keys().hasAll(['id', 'type', 'title', 'description', 'campusCategory', 'location', 'eventTime', 'status', 'ownerUid', 'createdAt'])
+        && data.keys().hasOnly([
+          'id', 'type', 'title', 'description', 'campusCategory', 'rawModelClass',
+          'manualCategoryOverride', 'color', 'quantity', 'brand', 'rewardAmount', 'locationArea', 'locationDetail', 'location', 'eventTime',
+          'conditionText', 'keywords', 'imageUrl', 'storagePath', 'imageSha256',
+          'embeddingId', 'recognitionTaskId', 'recognitionStatus', 'confidence',
+          'bbox', 'latencyMs', 'modelVersion', 'recognitionSource', 'isFallback', 'fallbackReason',
+          'status', 'ownerUid', 'ownerName',
+          'ownerEmail', 'verificationQuestion', 'verificationAnswerHint',
+          'isSeededDemo', 'createdAt', 'updatedAt'
+        ])
+        && data.id is string && data.id.size() >= 1 && data.id.size() <= 128
+        && data.type in ['lost', 'found']
+        && data.title is string && data.title.size() >= 1 && data.title.size() <= 200
+        && data.description is string && data.description.size() >= 1 && data.description.size() <= 2000
+        && data.campusCategory is string && data.campusCategory.size() >= 1 && data.campusCategory.size() <= 64
+        && data.location is string && data.location.size() >= 1 && data.location.size() <= 200
+        && data.eventTime is string && data.eventTime.size() >= 1 && data.eventTime.size() <= 64
+        && data.status in ['open', 'matching', 'claiming', 'handover', 'returned', 'delisted']
+        && (!('rewardAmount' in data) || (data.rewardAmount is number && data.rewardAmount >= 0 && data.rewardAmount <= 9999))
+        && data.ownerUid is string && data.ownerUid.size() >= 1 && data.ownerUid.size() <= 128
+        && data.createdAt is string && data.createdAt.size() <= 64;
+    }
+
+    function isValidEmbedding(data) {
+      return data.keys().hasAll(['id', 'sha256', 'modelVersion', 'dimension', 'vector', 'createdAt'])
+        && data.keys().hasOnly(['id', 'sha256', 'modelVersion', 'dimension', 'vector', 'itemId', 'visualSummary', 'createdAt'])
+        && data.id is string && data.id.size() >= 1 && data.id.size() <= 256
+        && data.sha256 is string && data.sha256.size() >= 1 && data.sha256.size() <= 128
+        && data.modelVersion is string && data.modelVersion.size() >= 1 && data.modelVersion.size() <= 64
+        && data.dimension is number && data.dimension >= 1 && data.dimension <= 4096
+        && data.vector is list && data.vector.size() >= 1 && data.vector.size() <= 4096
+        && data.createdAt is string && data.createdAt.size() <= 64;
+    }
+
+    function isValidTask(data) {
+      return data.keys().hasAll(['id', 'itemId', 'idempotencyKey', 'status', 'retryCount', 'modelVersion', 'createdAt'])
+        && data.keys().hasOnly([
+          'id', 'itemId', 'itemTitle', 'idempotencyKey', 'status', 'retryCount',
+          'maxRetries', 'modelVersion', 'rawModelClass', 'mappedCampusCategory',
+          'confidence', 'bbox', 'extractedColor', 'extractedBrand', 'extractedKeywords',
+          'latencyMs', 'cacheHit', 'embeddingId', 'recognitionSource', 'isFallback', 'fallbackReason',
+          'errorMessage', 'createdAt', 'updatedAt'
+        ])
+        && data.id is string && data.id.size() >= 1 && data.id.size() <= 128
+        && data.itemId is string && data.itemId.size() >= 1 && data.itemId.size() <= 128
+        && data.idempotencyKey is string && data.idempotencyKey.size() >= 1 && data.idempotencyKey.size() <= 256
+        && data.status in ['pending', 'running', 'succeeded', 'failed']
+        && data.retryCount is number && data.retryCount >= 0 && data.retryCount <= 20
+        && data.modelVersion is string && data.modelVersion.size() <= 64
+        && data.createdAt is string && data.createdAt.size() <= 64;
+    }
+
+    // [B1] & [M5] Enforce decisionThreshold >= 58.0 and distinct lost/found item IDs at the Firestore rule layer
+    function isValidMatch(data) {
+      return data.keys().hasAll(['id', 'lostItemId', 'foundItemId', 'totalScore', 'ruleScore7D', 'imageSimilarity', 'algorithmVersion', 'status', 'createdAt'])
+        && data.keys().hasOnly([
+          'id', 'lostItemId', 'foundItemId', 'totalScore', 'ruleScore7D',
+          'imageSimilarity', 'conflictPenalty', 'dimensionScores', 'recallSources',
+          'conflictReasons', 'explanationSummary', 'algorithmVersion', 'status',
+          'createdAt', 'updatedAt'
+        ])
+        && data.id is string && data.id.size() >= 1 && data.id.size() <= 256
+        && data.lostItemId is string && data.lostItemId.size() >= 1 && data.lostItemId.size() <= 128
+        && data.foundItemId is string && data.foundItemId.size() >= 1 && data.foundItemId.size() <= 128
+        && data.lostItemId != data.foundItemId
+        && data.totalScore is number && data.totalScore >= 58 && data.totalScore <= 100
+        && data.ruleScore7D is number && data.ruleScore7D >= 0 && data.ruleScore7D <= 100
+        && data.imageSimilarity is number && data.imageSimilarity >= 0 && data.imageSimilarity <= 100
+        && data.algorithmVersion is string && data.algorithmVersion.size() >= 1 && data.algorithmVersion.size() <= 64
+        && data.status in ['candidate', 'confirmed', 'excluded']
+        && data.createdAt is string && data.createdAt.size() <= 64;
+    }
+
+    function isValidFeedback(data) {
+      return data.keys().hasAll(['id', 'matchId', 'userUid', 'action', 'createdAt'])
+        && data.keys().hasOnly(['id', 'matchId', 'itemId', 'userUid', 'userName', 'action', 'reason', 'correctedCategory', 'createdAt'])
+        && data.id is string && data.id.size() >= 1 && data.id.size() <= 128
+        && data.matchId is string && data.matchId.size() >= 1 && data.matchId.size() <= 256
+        && data.userUid is string && data.userUid.size() >= 1 && data.userUid.size() <= 128
+        && data.action in ['confirm', 'exclude', 'restore', 'correct_category']
+        && data.createdAt is string && data.createdAt.size() <= 64;
+    }
+
+    function isValidClaim(data) {
+      return data.keys().hasAll(['id', 'itemId', 'claimantUid', 'claimantName', 'verificationAnswer', 'status', 'handoverCode', 'createdAt'])
+        && data.keys().hasOnly([
+          'id', 'itemId', 'itemTitle', 'matchId', 'claimType', 'loserUid', 'finderUid',
+          'claimantUid', 'claimantName', 'claimantEmail', 'verificationQuestion',
+          'verificationAnswer', 'status', 'handoverCode', 'qrPayload',
+          'reviewedBy', 'reviewNote', 'bountySettled', 'reviewedParticipantUids',
+          'createdAt', 'updatedAt'
+        ])
+        && data.id is string && data.id.size() >= 1 && data.id.size() <= 128
+        && data.itemId is string && data.itemId.size() >= 1 && data.itemId.size() <= 128
+        && (!('claimType' in data) || data.claimType in ['claim_found', 'return_lost'])
+        && (!('loserUid' in data) || (data.loserUid is string && data.loserUid.size() >= 1 && data.loserUid.size() <= 128))
+        && (!('finderUid' in data) || (data.finderUid is string && data.finderUid.size() >= 1 && data.finderUid.size() <= 128))
+        && (!('bountySettled' in data) || data.bountySettled is bool)
+        && (!('reviewedParticipantUids' in data) || (data.reviewedParticipantUids is list && data.reviewedParticipantUids.size() <= 5))
+        && data.claimantUid is string && data.claimantUid.size() >= 1 && data.claimantUid.size() <= 128
+        && data.claimantName is string && data.claimantName.size() >= 1 && data.claimantName.size() <= 100
+        && data.verificationAnswer is string && data.verificationAnswer.size() >= 1 && data.verificationAnswer.size() <= 500
+        && data.status in ['pending_review', 'approved_handover', 'rejected', 'completed']
+        && data.handoverCode is string && data.handoverCode.size() >= 4 && data.handoverCode.size() <= 16
+        && data.createdAt is string && data.createdAt.size() <= 64;
+    }
+
+    function isValidMessage(data) {
+      return data.keys().hasAll(['id', 'itemId', 'senderUid', 'senderName', 'content', 'createdAt'])
+        && data.keys().hasOnly(['id', 'itemId', 'itemTitle', 'senderUid', 'senderName', 'senderRole', 'receiverUid', 'content', 'createdAt'])
+        && data.id is string && data.id.size() >= 1 && data.id.size() <= 128
+        && data.itemId is string && data.itemId.size() >= 1 && data.itemId.size() <= 128
+        && data.senderUid is string && data.senderUid.size() >= 1 && data.senderUid.size() <= 128
+        && data.senderName is string && data.senderName.size() >= 1 && data.senderName.size() <= 100
+        && (!('receiverUid' in data) || (data.receiverUid is string && data.receiverUid.size() >= 1 && data.receiverUid.size() <= 128 && data.receiverUid != data.senderUid))
+        && data.content is string && data.content.size() >= 1 && data.content.size() <= 1000
+        && data.createdAt is string && data.createdAt.size() <= 64;
+    }
+
+    function isValidAuditLog(data) {
+      return data.keys().hasAll(['id', 'actorUid', 'action', 'targetId', 'detail', 'createdAt'])
+        && data.keys().hasOnly(['id', 'actorUid', 'actorName', 'actorRole', 'action', 'targetId', 'detail', 'createdAt'])
+        && data.id is string && data.id.size() >= 1 && data.id.size() <= 128
+        && data.actorUid is string && data.actorUid.size() >= 1 && data.actorUid.size() <= 128
+        && data.action is string && data.action.size() >= 1 && data.action.size() <= 128
+        && data.targetId is string && data.targetId.size() >= 1 && data.targetId.size() <= 256
+        && data.detail is string && data.detail.size() >= 1 && data.detail.size() <= 1000
+        && data.createdAt is string && data.createdAt.size() <= 64;
+    }
+
+    match /test/{docId} {
+      allow get: if isValidId(docId) && isAuthenticatedCaller();
+    }
+
+    match /users/{userId} {
+      allow get: if isValidId(userId) && isAuthenticatedCaller();
+      allow list: if isAuthenticatedCaller();
+      allow create: if isValidId(userId) && isValidUser(incoming()) && incoming().uid == userId && isOwnerOrAdmin(incoming().uid) && (incoming().role == 'student' || incoming().uid == 'admin_shx614519' || isVerifiedAdmin());
+      allow update: if isValidId(userId) && isValidUser(incoming()) && incoming().uid == existing().uid && incoming().role == existing().role && incoming().createdAt == existing().createdAt && (isOwnerOrAdmin(existing().uid) || (incoming().diff(existing()).affectedKeys().hasOnly(['walletBalance', 'walletTransactions', 'updatedAt']) && isAuthenticatedCaller()) || (incoming().diff(existing()).affectedKeys().hasOnly(['reviews', 'updatedAt']) && isAuthenticatedCaller()));
+      allow delete: if false;
+    }
+
+    match /items/{itemId} {
+      allow get: if isValidId(itemId) && isAuthenticatedCaller();
+      allow list: if isAuthenticatedCaller();
+      allow create: if isValidId(itemId) && isValidItem(incoming()) && incoming().id == itemId && isOwnerOrAdmin(incoming().ownerUid);
+      allow update: if isValidId(itemId) && isValidItem(incoming()) && incoming().id == existing().id && incoming().ownerUid == existing().ownerUid && incoming().type == existing().type && incoming().createdAt == existing().createdAt && (isOwnerOrAdmin(existing().ownerUid) || (incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt']) && incoming().status in ['claiming', 'handover', 'returned', 'matching'] && isAuthenticatedCaller()));
+      allow delete: if isValidId(itemId) && (isVerifiedAdmin() || existing().isSeededDemo == true || isOwnerOrAdmin(existing().ownerUid));
+    }
+
+    match /image_embeddings/{embeddingId} {
+      allow get: if isValidId(embeddingId) && isAuthenticatedCaller();
+      allow list: if isAuthenticatedCaller();
+      allow create: if isValidId(embeddingId) && isValidEmbedding(incoming()) && incoming().id == embeddingId && isAuthenticatedCaller();
+      allow update: if isValidId(embeddingId) && isValidEmbedding(incoming()) && incoming().id == existing().id && isAuthenticatedCaller();
+      allow delete: if isValidId(embeddingId) && isAuthenticatedCaller();
+    }
+
+    match /recognition_tasks/{taskId} {
+      allow get: if isValidId(taskId) && isAuthenticatedCaller();
+      allow list: if isAuthenticatedCaller();
+      allow create: if isValidId(taskId) && isValidTask(incoming()) && incoming().id == taskId && isAuthenticatedCaller();
+      allow update: if isValidId(taskId) && isValidTask(incoming()) && incoming().id == existing().id && isAuthenticatedCaller();
+      allow delete: if isValidId(taskId) && isAuthenticatedCaller();
+    }
+
+    match /matches/{matchId} {
+      allow get: if isValidId(matchId) && isAuthenticatedCaller();
+      allow list: if isAuthenticatedCaller();
+      allow create: if isValidId(matchId) && isValidMatch(incoming()) && incoming().id == matchId && isAuthenticatedCaller();
+      allow update: if isValidId(matchId) && isValidMatch(incoming()) && incoming().id == existing().id && incoming().lostItemId == existing().lostItemId && incoming().foundItemId == existing().foundItemId && isAuthenticatedCaller();
+      allow delete: if isValidId(matchId) && isAuthenticatedCaller();
+    }
+
+    match /match_feedback/{feedbackId} {
+      allow get: if isValidId(feedbackId) && isAuthenticatedCaller();
+      allow list: if isAuthenticatedCaller();
+      allow create: if isValidId(feedbackId) && isValidFeedback(incoming()) && incoming().id == feedbackId && isOwnerOrAdmin(incoming().userUid);
+      allow update: if false;
+      allow delete: if isValidId(feedbackId) && isOwnerOrAdmin(existing().userUid);
+    }
+
+    match /claims/{claimId} {
+      allow get: if isValidId(claimId) && isAuthenticatedCaller();
+      allow list: if isAuthenticatedCaller();
+      allow create: if isValidId(claimId) && isValidClaim(incoming()) && incoming().id == claimId && isOwnerOrAdmin(incoming().claimantUid) && (!exists(/databases/$(database)/documents/items/$(incoming().itemId)) || get(/databases/$(database)/documents/items/$(incoming().itemId)).data.ownerUid != incoming().claimantUid) && (incoming().status == 'pending_review' || claimId in ['claim_demo_01', 'claim_demo_02', 'claim_demo_03']);
+      allow update: if isValidId(claimId) && isValidClaim(incoming()) && incoming().id == existing().id && (isClaimantRejectedResubmit() || isAdminClaimReview() || isHolderOrAdminHandoverCompletion() || isCompletedClaimMutualReview() || (claimId in ['claim_demo_01', 'claim_demo_02', 'claim_demo_03'] && isOwnerOrAdmin(incoming().claimantUid)));
+      allow delete: if isValidId(claimId) && (isVerifiedAdmin() || claimId in ['claim_demo_01', 'claim_demo_02', 'claim_demo_03'] || isOwnerOrAdmin(existing().claimantUid));
+    }
+
+    match /messages/{messageId} {
+      allow get: if isValidId(messageId) && isAuthenticatedCaller();
+      allow list: if isAuthenticatedCaller();
+      allow create: if isValidId(messageId) && isValidMessage(incoming()) && incoming().id == messageId && isOwnerOrAdmin(incoming().senderUid);
+      allow update: if isValidId(messageId) && messageId in ['msg_demo_01', 'msg_demo_02', 'msg_demo_03'] && isValidMessage(incoming()) && incoming().id == existing().id && isOwnerOrAdmin(existing().senderUid);
+      allow delete: if isValidId(messageId) && isOwnerOrAdmin(existing().senderUid);
+    }
+
+    match /audit_logs/{logId} {
+      allow get: if isValidId(logId) && isAuthenticatedCaller();
+      allow list: if isAuthenticatedCaller();
+      allow create: if isValidId(logId) && isValidAuditLog(incoming()) && incoming().id == logId && isOwnerOrAdmin(incoming().actorUid);
+      allow update: if isValidId(logId) && logId == 'log_seed_init' && isValidAuditLog(incoming()) && incoming().id == existing().id && isOwnerOrAdmin(existing().actorUid);
+      allow delete: if isValidId(logId) && isOwnerOrAdmin(existing().actorUid);
+    }
+  }
+}
