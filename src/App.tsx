@@ -20,8 +20,8 @@ import {
   AlertCircle,
   Send,
   ShieldCheck,
+  Bot,
 } from 'lucide-react';
-import { onAuthStateChanged } from 'firebase/auth';
 import {
   CAMPUS_CATEGORIES,
   CAMPUS_LOCATION_AREAS,
@@ -34,11 +34,11 @@ import {
   LostFoundItem,
   MatchRecord,
   MessageRecord,
-  resolveCanonicalAuthProfile,
+  RecognitionTask,
   UserProfile,
 } from './types/models';
 import { SEED_USERS } from './data/seedData';
-import { auth, ensureAnonymousOrActiveSession } from './lib/firebase';
+import { ensureAnonymousOrActiveSession } from './lib/firebase';
 import {
   createClaimRequest,
   fetchAllDataBundle,
@@ -51,6 +51,7 @@ import { AuthModal } from './components/AuthModal';
 import { MessagesCenterView } from './components/MessagesCenterView';
 import { SmartMatchWizardView } from './components/SmartMatchWizardView';
 import { ProfileCenterView } from './components/ProfileCenterView';
+import { AiAgentDrawer, AgentPublishDraft } from './components/AiAgentDrawer';
 import {
   ActiveThreadTarget,
   cleanDisplayName,
@@ -116,6 +117,7 @@ export default function App() {
   }, [users]);
   const [items, setItems] = useState<LostFoundItem[]>([]);
   const [embeddings, setEmbeddings] = useState<ImageEmbedding[]>([]);
+  const [tasks, setTasks] = useState<RecognitionTask[]>([]);
   const [matches, setMatches] = useState<MatchRecord[]>([]);
   const [claims, setClaims] = useState<ClaimRecord[]>([]);
   const [messages, setMessages] = useState<MessageRecord[]>([]);
@@ -123,6 +125,8 @@ export default function App() {
 
   // Modals & Cross-Tab Routing State (Show quick-login sheet first on app launch)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(true);
+  const [isAiAgentOpen, setIsAiAgentOpen] = useState(false);
+  const [pendingAgentDraft, setPendingAgentDraft] = useState<AgentPublishDraft | null>(null);
   const [selectedThread, setSelectedThread] = useState<ActiveThreadTarget | null>(null);
   const [viewingUserProfile, setViewingUserProfile] = useState<UserProfile | null>(null);
 
@@ -282,15 +286,6 @@ export default function App() {
 
   useEffect(() => {
     ensureAnonymousOrActiveSession().catch(() => {});
-    const unsub = onAuthStateChanged(auth, (fbUser) => {
-      if (fbUser && !fbUser.isAnonymous && fbUser.email) {
-        setSelectedThread(null);
-        setDetailItem(null);
-        setViewingUserProfile(null);
-        setCurrentUser(resolveCanonicalAuthProfile(fbUser, usersRef.current, SEED_USERS));
-      }
-    });
-    return () => unsub();
   }, []);
 
   const loadDataFromFirestore = useCallback(async (allowAutoSeed = false) => {
@@ -333,6 +328,7 @@ export default function App() {
       }
       setItems(bundle.items);
       setEmbeddings(bundle.embeddings);
+      setTasks(bundle.tasks || []);
       setMatches(bundle.matches);
       setClaims(bundle.claims);
       setMessages(bundle.messages);
@@ -635,9 +631,9 @@ export default function App() {
 
       {/* Mobile App Container Shell */}
       <div className="w-full sm:max-w-[450px] min-h-screen sm:min-h-[860px] bg-[#F5F6F8] dark:bg-slate-950 sm:rounded-[38px] sm:shadow-[0_24px_70px_rgba(15,23,42,0.18)] sm:border-[6px] sm:border-slate-900/90 flex flex-col relative overflow-hidden transition-colors">
-        {/* Clean Top Navigation Header (Aligned to Top-Left) */}
+        {/* Clean Top Navigation Header (Channels on left, AI RAG Agent button on right) */}
         {activeTab === 'home' && (
-          <header className="sticky top-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 pt-3 pb-2 flex items-center justify-start transition-colors">
+          <header className="sticky top-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 pt-3 pb-2 flex items-center justify-between gap-2 transition-colors">
             <div className="flex items-baseline gap-6">
               {[
                 { key: 'lost', label: '失物' },
@@ -664,6 +660,15 @@ export default function App() {
                 );
               })}
             </div>
+
+            <button
+              type="button"
+              onClick={() => setIsAiAgentOpen(true)}
+              className="px-2.5 py-1.5 rounded-full bg-gradient-to-r from-slate-900 to-[#0F2447] dark:from-[#FF6B2C] dark:to-orange-500 text-white text-[11px] font-bold flex items-center gap-1.5 shadow-xs hover:opacity-95 cursor-pointer shrink-0"
+            >
+              <Bot className="w-3.5 h-3.5 text-amber-300 dark:text-white" />
+              <span>AI 助手</span>
+            </button>
           </header>
         )}
 
@@ -1212,6 +1217,8 @@ export default function App() {
               embeddings={embeddings}
               matches={activeMatches}
               currentUser={currentUser}
+              initialDraft={pendingAgentDraft}
+              onDraftConsumed={() => setPendingAgentDraft(null)}
               onDataMutated={() => loadDataFromFirestore(false)}
               onOpenChatForItem={(itemId) => {
                 const target = items.find((i) => i.id === itemId);
@@ -1249,6 +1256,7 @@ export default function App() {
               onOpenUserProfile={setViewingUserProfile}
               allItems={items}
               activeItems={activeItems}
+              tasks={tasks}
               matches={activeMatches}
               claims={claims}
               messages={messages}
@@ -1715,6 +1723,18 @@ export default function App() {
         allItems={items}
         onClose={() => setViewingUserProfile(null)}
         onOpenItemDetail={handleOpenItemDetail}
+      />
+
+      {/* AI RAG + Tool-Calling Assistant Drawer */}
+      <AiAgentDrawer
+        isOpen={isAiAgentOpen}
+        onClose={() => setIsAiAgentOpen(false)}
+        currentUser={currentUser}
+        onOpenItemDetail={handleOpenItemDetail}
+        onApplyPublishDraft={(draft) => {
+          setPendingAgentDraft(draft);
+          handleSelectTab('match');
+        }}
       />
 
       {/* Account Switcher Modal */}

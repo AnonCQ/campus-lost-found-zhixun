@@ -1,0 +1,1512 @@
+{
+  "dataset": {
+    "key": "dataset",
+    "title": "标准主评测集 v1 (dataset.json)",
+    "subtitle": "人工标注的失物-拾物配对样本，评估多维打分、视觉特征与三路召回重排的精度与召回",
+    "size": 40,
+    "positives": 20,
+    "negatives": 20,
+    "designNotes": "正例覆盖：精确同类/同族不同词(银行卡↔校园卡)/歧义桥(笔记本↔笔记本电脑)/品牌推断(iPhone↔苹果)；负例覆盖：同色不同物/同族不同卡/品牌冲突/成色冲突/数量不符/地点时间双重矛盾。N15 为刻意保留的高难度边界样本。",
+    "pairs": [
+      {
+        "id": "P01",
+        "label": 1,
+        "note": "细节全对上的黑伞（太刀字样+星星图案+缺口）",
+        "lost": {
+          "title": "黑色雨伞",
+          "description": "黑色雨伞一把，按钮开关式，伞面有白色星星图案，伞内侧写着「太刀」两个字，手柄上有个小缺口",
+          "category_name": "雨伞",
+          "location": "图书馆三楼自习室",
+          "lost_time": "2026-09-01T10:00:00"
+        },
+        "found": {
+          "description": "捡到一把黑色雨伞，按钮开关，伞面有白色星星图案，内侧有太刀字样，手柄有个小缺口",
+          "category_name": "雨伞",
+          "location": "图书馆三楼",
+          "found_time": "2026-09-01T12:00:00"
+        }
+      },
+      {
+        "id": "P02",
+        "label": 1,
+        "note": "同族不同词：银行卡 vs 校园卡",
+        "lost": {
+          "title": "银行卡",
+          "description": "在图书馆借书处丢了一张银行卡，蓝色卡面",
+          "category_name": "银行卡",
+          "location": "图书馆",
+          "lost_time": "2026-09-02T14:00:00"
+        },
+        "found": {
+          "description": "捡到一张蓝色的校园卡，交到服务台了",
+          "category_name": "校园卡",
+          "location": "图书馆借书处",
+          "found_time": "2026-09-02T15:00:00"
+        }
+      },
+      {
+        "id": "P03",
+        "label": 1,
+        "note": "纸质笔记本，内含物吻合",
+        "lost": {
+          "title": "笔记本",
+          "description": "一本黑色封皮的笔记本，里面夹着微积分提纲和一张课表",
+          "category_name": "笔记本",
+          "location": "第三教学楼201",
+          "lost_time": "2026-09-03T08:00:00"
+        },
+        "found": {
+          "description": "教室捡到一本黑色笔记本，里面有微积分提纲",
+          "category_name": "笔记本",
+          "location": "三教201",
+          "found_time": "2026-09-03T09:00:00"
+        }
+      },
+      {
+        "id": "P04",
+        "label": 1,
+        "note": "笔记本电脑，品牌细节吻合",
+        "lost": {
+          "title": "笔记本电脑",
+          "description": "银色 MacBook Pro 14寸，贴纸已撕，左侧有轻微划痕",
+          "category_name": "笔记本电脑",
+          "location": "图书馆四楼",
+          "lost_time": "2026-09-04T16:00:00"
+        },
+        "found": {
+          "description": "捡到一台银色 MacBook Pro，左侧面有划痕",
+          "category_name": "笔记本电脑",
+          "location": "图书馆四楼阅览区",
+          "found_time": "2026-09-04T17:30:00"
+        }
+      },
+      {
+        "id": "P05",
+        "label": 1,
+        "note": "品牌推断：iPhone 13 vs 苹果13",
+        "lost": {
+          "title": "黑色 iPhone 13",
+          "description": "黑色 iPhone 13 一部，带透明手机壳，锁屏壁纸是星空",
+          "category_name": "手机",
+          "location": "第二教学楼走廊",
+          "lost_time": "2026-09-05T11:00:00"
+        },
+        "found": {
+          "description": "捡到一部黑色苹果13手机，透明壳，壁纸是星空",
+          "category_name": "手机",
+          "location": "二教走廊",
+          "found_time": "2026-09-05T12:00:00"
+        }
+      },
+      {
+        "id": "P06",
+        "label": 1,
+        "note": "保温杯，颜色+地点吻合",
+        "lost": {
+          "title": "蓝色保温杯",
+          "description": "蓝色保温杯一个，杯身有划痕，杯盖上挂着茶漏",
+          "category_name": "水杯",
+          "location": "体育馆二楼",
+          "lost_time": "2026-09-05T19:00:00"
+        },
+        "found": {
+          "description": "篮球场边捡到一个蓝色保温杯，带茶漏",
+          "category_name": "保温杯",
+          "location": "体育馆",
+          "found_time": "2026-09-05T20:00:00"
+        }
+      },
+      {
+        "id": "P07",
+        "label": 1,
+        "note": "钥匙串，挂件吻合",
+        "lost": {
+          "title": "钥匙串",
+          "description": "一串钥匙三个，挂着黄色小鸭子挂件",
+          "category_name": "钥匙",
+          "location": "第一食堂",
+          "lost_time": "2026-09-06T12:00:00"
+        },
+        "found": {
+          "description": "食堂餐桌上捡到钥匙串，三个钥匙，小黄鸭挂件",
+          "category_name": "钥匙串",
+          "location": "一食堂",
+          "found_time": "2026-09-06T13:00:00"
+        }
+      },
+      {
+        "id": "P08",
+        "label": 1,
+        "note": "眼镜，黑框细节吻合",
+        "lost": {
+          "title": "黑框眼镜",
+          "description": "黑色方框眼镜一副，镜腿有磨损，度数大概500度",
+          "category_name": "眼镜",
+          "location": "图书馆二楼",
+          "lost_time": "2026-09-06T15:00:00"
+        },
+        "found": {
+          "description": "阅览室捡到黑色方框眼镜，镜腿有磨损痕迹",
+          "category_name": "眼镜",
+          "location": "图书馆二楼阅览室",
+          "found_time": "2026-09-06T16:00:00"
+        }
+      },
+      {
+        "id": "P09",
+        "label": 1,
+        "note": "品牌推断：AirPods vs 苹果耳机",
+        "lost": {
+          "title": "AirPods",
+          "description": "苹果无线耳机 AirPods 二代，白色，充电盒外壳有划痕",
+          "category_name": "耳机",
+          "location": "操场看台",
+          "lost_time": "2026-09-06T18:00:00"
+        },
+        "found": {
+          "description": "操场上捡到白色苹果无线耳机，盒子有划痕",
+          "category_name": "耳机",
+          "location": "操场",
+          "found_time": "2026-09-06T19:00:00"
+        }
+      },
+      {
+        "id": "P10",
+        "label": 1,
+        "note": "同族不同词：书包 vs 双肩包",
+        "lost": {
+          "title": "红色书包",
+          "description": "红色双肩书包，前面口袋绣着卡通猫，内有两本教材",
+          "category_name": "书包",
+          "location": "第五教学楼",
+          "lost_time": "2026-09-07T08:00:00"
+        },
+        "found": {
+          "description": "教室捡到红色双肩包，有卡通猫刺绣",
+          "category_name": "双肩包",
+          "location": "五教",
+          "found_time": "2026-09-07T09:00:00"
+        }
+      },
+      {
+        "id": "P11",
+        "label": 1,
+        "note": "同族不同词：银行卡 vs 借记卡",
+        "lost": {
+          "title": "借记卡",
+          "description": "一张工资卡借记卡，卡面绿色，建设银行的",
+          "category_name": "银行卡",
+          "location": "行政楼",
+          "lost_time": "2026-09-07T10:00:00"
+        },
+        "found": {
+          "description": "捡到一张绿色建行银行卡",
+          "category_name": "借记卡",
+          "location": "行政楼一楼",
+          "found_time": "2026-09-07T11:00:00"
+        }
+      },
+      {
+        "id": "P12",
+        "label": 1,
+        "note": "同族不同词：雨伞 vs 遮阳伞",
+        "lost": {
+          "title": "蓝色遮阳伞",
+          "description": "浅蓝色遮阳伞，折叠三折伞，伞柄是弯的",
+          "category_name": "雨伞",
+          "location": "东校区",
+          "lost_time": "2026-09-06T13:00:00"
+        },
+        "found": {
+          "description": "东门附近捡到一把浅蓝色三折叠伞，弯钩手柄",
+          "category_name": "遮阳伞",
+          "location": "东校区校门",
+          "found_time": "2026-09-06T14:00:00"
+        }
+      },
+      {
+        "id": "P13",
+        "label": 1,
+        "note": "同族不同词：充电宝 vs 移动电源",
+        "lost": {
+          "title": "充电宝",
+          "description": "白色小米充电宝一万毫安，四个电量灯",
+          "category_name": "充电宝",
+          "location": "实验楼",
+          "lost_time": "2026-09-05T14:00:00"
+        },
+        "found": {
+          "description": "捡到白色小米移动电源，10000毫安",
+          "category_name": "移动电源",
+          "location": "实验楼三楼",
+          "found_time": "2026-09-05T15:00:00"
+        }
+      },
+      {
+        "id": "P14",
+        "label": 1,
+        "note": "同族不同词：校园卡 vs 饭卡",
+        "lost": {
+          "title": "饭卡",
+          "description": "饭卡丢失，卡套是透明的，里面还塞了张公交卡",
+          "category_name": "校园卡",
+          "location": "学生食堂",
+          "lost_time": "2026-09-04T12:00:00"
+        },
+        "found": {
+          "description": "食堂二楼捡到一张饭卡，透明卡套里有一张公交卡",
+          "category_name": "饭卡",
+          "location": "食堂二楼",
+          "found_time": "2026-09-04T12:30:00"
+        }
+      },
+      {
+        "id": "P15",
+        "label": 1,
+        "note": "透明水杯，材质细节吻合",
+        "lost": {
+          "title": "透明水杯",
+          "description": "透明塑料水杯，杯底有裂纹，盖子是粉色的",
+          "category_name": "水杯",
+          "location": "教学楼A区",
+          "lost_time": "2026-09-03T10:00:00"
+        },
+        "found": {
+          "description": "捡到透明塑料杯子，粉色杯盖，杯底裂了",
+          "category_name": "杯子",
+          "location": "教学楼A",
+          "found_time": "2026-09-03T11:00:00"
+        }
+      },
+      {
+        "id": "P16",
+        "label": 1,
+        "note": "身份证+卡套细节",
+        "lost": {
+          "title": "身份证",
+          "description": "身份证丢了，装在黑色卡包里，卡包拉链坏了",
+          "category_name": "身份证",
+          "location": "校医院",
+          "lost_time": "2026-09-02T09:00:00"
+        },
+        "found": {
+          "description": "校医院挂号窗口捡到黑色卡包，拉链坏，内有身份证一张",
+          "category_name": "证件",
+          "location": "校医院",
+          "found_time": "2026-09-02T10:00:00"
+        }
+      },
+      {
+        "id": "P17",
+        "label": 1,
+        "note": "白色有线耳机",
+        "lost": {
+          "title": "有线耳机",
+          "description": "白色有线耳机，线控上有划痕，L端标掉了漆",
+          "category_name": "耳机",
+          "location": "图书馆",
+          "lost_time": "2026-09-01T15:00:00"
+        },
+        "found": {
+          "description": "自习室捡到白色有线耳机，线控有划痕掉漆",
+          "category_name": "耳机",
+          "location": "图书馆三楼自习区",
+          "found_time": "2026-09-01T16:00:00"
+        }
+      },
+      {
+        "id": "P18",
+        "label": 1,
+        "note": "同族不同词：电脑 vs 笔记本电脑",
+        "lost": {
+          "title": "灰色电脑",
+          "description": "灰色笔记本电脑，联想小新，屏幕左上角有个白点",
+          "category_name": "笔记本电脑",
+          "location": "研究生楼",
+          "lost_time": "2026-09-06T17:00:00"
+        },
+        "found": {
+          "description": "捡到联想小新笔记本电脑一台，灰色，屏幕有白点",
+          "category_name": "电脑",
+          "location": "研究生楼机房",
+          "found_time": "2026-09-06T18:00:00"
+        }
+      },
+      {
+        "id": "P19",
+        "label": 1,
+        "note": "黑色钱包+内含物吻合",
+        "lost": {
+          "title": "黑色钱包",
+          "description": "黑色短款钱包，里面有校园卡和30元现金，拉链头上挂个小熊",
+          "category_name": "钱包",
+          "location": "南校区",
+          "lost_time": "2026-09-05T12:00:00"
+        },
+        "found": {
+          "description": "捡到黑色短款钱包一个，内有校园卡和现金，小熊挂饰",
+          "category_name": "钱包",
+          "location": "南校区食堂门口",
+          "found_time": "2026-09-05T13:00:00"
+        }
+      },
+      {
+        "id": "P20",
+        "label": 1,
+        "note": "当天丢失的灰色保温杯",
+        "lost": {
+          "title": "灰色保温杯",
+          "description": "灰色保温杯，不锈钢材质，杯底有防滑胶垫",
+          "category_name": "保温杯",
+          "location": "北校区",
+          "lost_time": "2026-09-07T09:00:00"
+        },
+        "found": {
+          "description": "今天早上在北门捡到灰色不锈钢保温杯，底部有胶垫",
+          "category_name": "水杯",
+          "location": "北校区北门",
+          "found_time": "2026-09-07T10:00:00"
+        }
+      },
+      {
+        "id": "N01",
+        "label": 0,
+        "note": "同款黑伞但无太刀字样（细节不同物）",
+        "lost": {
+          "title": "黑色雨伞",
+          "description": "黑色雨伞一把，按钮开关式，伞内侧写着「太刀」两个字",
+          "category_name": "雨伞",
+          "location": "图书馆三楼",
+          "lost_time": "2026-09-01T10:00:00"
+        },
+        "found": {
+          "description": "捡到黑色自动伞一把，素面无图案，手柄完好",
+          "category_name": "雨伞",
+          "location": "图书馆三楼",
+          "found_time": "2026-09-01T12:00:00"
+        }
+      },
+      {
+        "id": "N02",
+        "label": 0,
+        "note": "同色黑水杯，地点与细节均对不上",
+        "lost": {
+          "title": "黑色水杯",
+          "description": "黑色磨砂水杯，带品牌logo，杯身很轻",
+          "category_name": "水杯",
+          "location": "第一教学楼",
+          "lost_time": "2026-09-02T10:00:00"
+        },
+        "found": {
+          "description": "捡到黑色磨砂杯子，很重，像是玻璃内胆，无logo",
+          "category_name": "水杯",
+          "location": "体育馆游泳馆",
+          "found_time": "2026-09-07T15:00:00"
+        }
+      },
+      {
+        "id": "N03",
+        "label": 0,
+        "note": "品牌冲突：iPhone vs 华为",
+        "lost": {
+          "title": "黑色 iPhone 13",
+          "description": "黑色 iPhone 13，直角边框，带透明壳",
+          "category_name": "手机",
+          "location": "第二教学楼",
+          "lost_time": "2026-09-05T11:00:00"
+        },
+        "found": {
+          "description": "捡到黑色华为手机一部，曲面屏，带硅胶壳",
+          "category_name": "手机",
+          "location": "二教",
+          "found_time": "2026-09-05T12:00:00"
+        }
+      },
+      {
+        "id": "N04",
+        "label": 0,
+        "note": "颜色冲突：红色书包 vs 蓝色书包",
+        "lost": {
+          "title": "红色书包",
+          "description": "红色双肩书包，前袋有卡通猫刺绣",
+          "category_name": "书包",
+          "location": "第五教学楼",
+          "lost_time": "2026-09-07T08:00:00"
+        },
+        "found": {
+          "description": "捡到蓝色双肩书包一只，纯色无图案",
+          "category_name": "书包",
+          "location": "五教",
+          "found_time": "2026-09-07T09:00:00"
+        }
+      },
+      {
+        "id": "N05",
+        "label": 0,
+        "note": "成色冲突：全新耳机 vs 破损耳机",
+        "lost": {
+          "title": "全新耳机",
+          "description": "全新白色蓝牙耳机，刚拆封用了三天，无任何划痕",
+          "category_name": "耳机",
+          "location": "图书馆",
+          "lost_time": "2026-09-06T10:00:00"
+        },
+        "found": {
+          "description": "捡到白色蓝牙耳机，外壳破损开裂，磨损严重",
+          "category_name": "耳机",
+          "location": "图书馆一楼",
+          "found_time": "2026-09-06T11:00:00"
+        }
+      },
+      {
+        "id": "N06",
+        "label": 0,
+        "note": "数量不符：一把伞 vs 两把伞",
+        "lost": {
+          "title": "黑色雨伞",
+          "description": "黑色长柄雨伞一把，木质弯钩手柄",
+          "category_name": "雨伞",
+          "location": "校门口",
+          "lost_time": "2026-09-05T17:00:00"
+        },
+        "found": {
+          "description": "捡到两把黑色长柄雨伞，木弯钩手柄，应该是别人的",
+          "category_name": "雨伞",
+          "location": "校门",
+          "found_time": "2026-09-05T18:00:00"
+        }
+      },
+      {
+        "id": "N07",
+        "label": 0,
+        "note": "同族不同卡：银行卡 vs 身份证（家族≠同物）",
+        "lost": {
+          "title": "银行卡",
+          "description": "工商银行卡一张，卡面粉色，卡号尾号8888",
+          "category_name": "银行卡",
+          "location": "超市",
+          "lost_time": "2026-09-04T19:00:00"
+        },
+        "found": {
+          "description": "收银台捡到一张身份证，紫色卡面",
+          "category_name": "身份证",
+          "location": "超市收银台",
+          "found_time": "2026-09-04T20:00:00"
+        }
+      },
+      {
+        "id": "N08",
+        "label": 0,
+        "note": "不同课本：微积分 vs 英语",
+        "lost": {
+          "title": "微积分课本",
+          "description": "高等数学上册课本，蓝色封面，里面有大量笔记",
+          "category_name": "课本",
+          "location": "第三教学楼",
+          "lost_time": "2026-09-03T14:00:00"
+        },
+        "found": {
+          "description": "教室捡到英语课本一本，绿色封面，全新无笔记",
+          "category_name": "课本",
+          "location": "三教",
+          "found_time": "2026-09-03T15:00:00"
+        }
+      },
+      {
+        "id": "N09",
+        "label": 0,
+        "note": "同款黑伞，地点与时间均矛盾",
+        "lost": {
+          "title": "黑色雨伞",
+          "description": "黑色三折叠伞，无任何图案和标记",
+          "category_name": "雨伞",
+          "location": "图书馆",
+          "lost_time": "2026-09-06T09:00:00"
+        },
+        "found": {
+          "description": "体育馆门口捡到黑色三折叠伞，无标记",
+          "category_name": "雨伞",
+          "location": "体育馆",
+          "found_time": "2026-09-07T18:00:00"
+        }
+      },
+      {
+        "id": "N10",
+        "label": 0,
+        "note": "时间相隔35天的同类水杯",
+        "lost": {
+          "title": "绿色水杯",
+          "description": "军绿色大容量水杯，带背带，容量1升",
+          "category_name": "水杯",
+          "location": "操场",
+          "lost_time": "2026-08-01T10:00:00"
+        },
+        "found": {
+          "description": "操场边捡到军绿色大水杯，带背带",
+          "category_name": "水杯",
+          "location": "操场东看台",
+          "found_time": "2026-09-05T16:00:00"
+        }
+      },
+      {
+        "id": "N11",
+        "label": 0,
+        "note": "不同物品：黑色钱包 vs 黑色书包",
+        "lost": {
+          "title": "黑色钱包",
+          "description": "黑色长款钱包，内有一张校园卡",
+          "category_name": "钱包",
+          "location": "食堂",
+          "lost_time": "2026-09-04T12:00:00"
+        },
+        "found": {
+          "description": "捡到黑色双肩书包一个，内有书本和水杯",
+          "category_name": "书包",
+          "location": "食堂门口",
+          "found_time": "2026-09-04T13:00:00"
+        }
+      },
+      {
+        "id": "N12",
+        "label": 0,
+        "note": "同族不同物：近视镜 vs 墨镜",
+        "lost": {
+          "title": "近视眼镜",
+          "description": "透明镜框近视眼镜，镜片很厚，500度",
+          "category_name": "眼镜",
+          "location": "教学楼B区",
+          "lost_time": "2026-09-05T09:00:00"
+        },
+        "found": {
+          "description": "捡到黑色墨镜一副，镜片很大，偏光的",
+          "category_name": "眼镜",
+          "location": "教学楼B",
+          "found_time": "2026-09-05T10:00:00"
+        }
+      },
+      {
+        "id": "N13",
+        "label": 0,
+        "note": "品牌冲突：iPhone vs 小米",
+        "lost": {
+          "title": "iPhone 14",
+          "description": "白色 iPhone 14，灵动岛，带 MagSafe 透明壳",
+          "category_name": "手机",
+          "location": "快递驿站",
+          "lost_time": "2026-09-06T15:00:00"
+        },
+        "found": {
+          "description": "捡到白色小米手机一部，后置方形摄像模组",
+          "category_name": "手机",
+          "location": "快递站",
+          "found_time": "2026-09-06T16:00:00"
+        }
+      },
+      {
+        "id": "N14",
+        "label": 0,
+        "note": "材质冲突：塑料杯 vs 不锈钢杯",
+        "lost": {
+          "title": "透明塑料水杯",
+          "description": "透明塑料随手杯，很轻，350毫升",
+          "category_name": "水杯",
+          "location": "行政楼",
+          "lost_time": "2026-09-06T10:00:00"
+        },
+        "found": {
+          "description": "捡到不锈钢保温杯，很重，500毫升以上",
+          "category_name": "保温杯",
+          "location": "行政楼大厅",
+          "found_time": "2026-09-06T11:00:00"
+        }
+      },
+      {
+        "id": "N15",
+        "label": 0,
+        "note": "高难度边界：笔记本电脑 vs 纸质笔记本（歧义桥会拉近距离，靠内容细节区分）",
+        "lost": {
+          "title": "笔记本电脑",
+          "description": "苹果笔记本电脑，银色，键盘带背光，装在电脑包里",
+          "category_name": "笔记本电脑",
+          "location": "图书馆四楼",
+          "lost_time": "2026-09-06T14:00:00"
+        },
+        "found": {
+          "description": "捡到一本纸质笔记本，硬壳方格本，里面是手写的高数笔记",
+          "category_name": "笔记本",
+          "location": "图书馆四楼",
+          "found_time": "2026-09-06T15:00:00"
+        }
+      },
+      {
+        "id": "N16",
+        "label": 0,
+        "note": "不同物品：充电宝 vs 数据线",
+        "lost": {
+          "title": "充电宝",
+          "description": "黑色充电宝，20000毫安，带数显屏",
+          "category_name": "充电宝",
+          "location": "自习室",
+          "lost_time": "2026-09-05T18:00:00"
+        },
+        "found": {
+          "description": "桌洞里捡到黑色数据线一根，编织线皮，Type-C口",
+          "category_name": "数据线",
+          "location": "自习室",
+          "found_time": "2026-09-05T19:00:00"
+        }
+      },
+      {
+        "id": "N17",
+        "label": 0,
+        "note": "不同物品：校园卡 vs 玩偶",
+        "lost": {
+          "title": "校园卡",
+          "description": "校园卡一张，卡套上贴着柯基贴纸",
+          "category_name": "校园卡",
+          "location": "操场",
+          "lost_time": "2026-09-03T16:00:00"
+        },
+        "found": {
+          "description": "看台上捡到柯基玩偶一只，20厘米高",
+          "category_name": "玩偶",
+          "location": "操场看台",
+          "found_time": "2026-09-03T17:00:00"
+        }
+      },
+      {
+        "id": "N18",
+        "label": 0,
+        "note": "同族不同物：白色运动鞋 vs 白色T恤",
+        "lost": {
+          "title": "白色运动鞋",
+          "description": "白色跑步鞋，42码，鞋带是荧光绿的",
+          "category_name": "鞋子",
+          "location": "体育馆",
+          "lost_time": "2026-09-04T20:00:00"
+        },
+        "found": {
+          "description": "更衣室捡到白色T恤一件，纯棉，尺码L",
+          "category_name": "衣服",
+          "location": "体育馆更衣室",
+          "found_time": "2026-09-04T21:00:00"
+        }
+      },
+      {
+        "id": "N19",
+        "label": 0,
+        "note": "同族不同证：身份证 vs 驾照",
+        "lost": {
+          "title": "身份证",
+          "description": "身份证一张，1998年出生，地址是四川的",
+          "category_name": "身份证",
+          "location": "校门口",
+          "lost_time": "2026-09-02T08:00:00"
+        },
+        "found": {
+          "description": "门卫处捡到一本驾驶证，外面套着棕色皮套",
+          "category_name": "驾照",
+          "location": "校门传达室",
+          "found_time": "2026-09-02T09:00:00"
+        }
+      },
+      {
+        "id": "N20",
+        "label": 0,
+        "note": "同款不同色：太刀黑伞 vs 太刀蓝伞（细节部分相同但颜色冲突）",
+        "lost": {
+          "title": "黑色雨伞",
+          "description": "黑色雨伞，按钮开关式，伞内侧写着「太刀」两个字",
+          "category_name": "雨伞",
+          "location": "图书馆三楼",
+          "lost_time": "2026-09-01T10:00:00"
+        },
+        "found": {
+          "description": "捡到一把蓝色雨伞，按钮开关，伞内侧也有太刀字样",
+          "category_name": "雨伞",
+          "location": "图书馆三楼",
+          "found_time": "2026-09-01T11:00:00"
+        }
+      }
+    ]
+  },
+  "dataset_control": {
+    "key": "dataset_control",
+    "title": "控制变量样本集 v2 (dataset_control.json)",
+    "subtitle": "控制变量法评估引擎：每组只改一个维度（A为基准，B/C/D为变量），观察单维度变化对分数的影响",
+    "size": 30,
+    "positives": 22,
+    "negatives": 8,
+    "designNotes": "覆盖类别、颜色、地点、时间、数量、成色、关键词、类目同族/跨类共 8 组 30 对控制变量样本。",
+    "pairs": [
+      {
+        "id": "G1-B",
+        "label": 1,
+        "note": "组1完全匹配基准：全维度命中，预期接近满分",
+        "lost": {
+          "title": "黑色长柄雨伞",
+          "description": "今天在5教401丢了一把黑色长柄雨伞，伞上有金色星星图案，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "lost_time": "2026-09-07T10:00:00"
+        },
+        "found": {
+          "description": "今天在5教401捡到一把黑色长柄雨伞，伞上有金色星星图案，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "found_time": "2026-09-07T12:00:00"
+        }
+      },
+      {
+        "id": "G1-C",
+        "label": 1,
+        "note": "组1：无照片（离线评测测不出图片差异，预期分数≈G1-B）",
+        "lost": {
+          "title": "黑色长柄雨伞",
+          "description": "今天在5教401丢了一把黑色长柄雨伞，伞上有金色星星图案，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "lost_time": "2026-09-07T10:00:00"
+        },
+        "found": {
+          "description": "今天在5教401捡到一把黑色长柄雨伞，伞上有金色星星图案，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "found_time": "2026-09-07T12:00:00"
+        }
+      },
+      {
+        "id": "G1-D",
+        "label": 1,
+        "note": "组1：状态差异 全新vs九成新——看状态维度是部分命中还是计0",
+        "lost": {
+          "title": "黑色长柄雨伞",
+          "description": "今天在5教401丢了一把黑色长柄雨伞，伞上有金色星星图案，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "lost_time": "2026-09-07T10:00:00"
+        },
+        "found": {
+          "description": "今天在5教401捡到一把黑色长柄雨伞，伞上有金色星星图案，全新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "found_time": "2026-09-07T12:00:00"
+        }
+      },
+      {
+        "id": "G2-B",
+        "label": 1,
+        "note": "组2颜色基准",
+        "lost": {
+          "title": "黑色长柄雨伞",
+          "description": "今天在5教401丢了一把黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "lost_time": "2026-09-07T10:00:00"
+        },
+        "found": {
+          "description": "今天在5教401捡到一把黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "found_time": "2026-09-07T12:00:00"
+        }
+      },
+      {
+        "id": "G2-C",
+        "label": 1,
+        "note": "组2：深黑vs黑——测颜色家族归一化（同家族应命中）",
+        "lost": {
+          "title": "黑色长柄雨伞",
+          "description": "今天在5教401丢了一把黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "lost_time": "2026-09-07T10:00:00"
+        },
+        "found": {
+          "description": "今天在5教401捡到一把深黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "found_time": "2026-09-07T12:00:00"
+        }
+      },
+      {
+        "id": "G2-D",
+        "label": 0,
+        "note": "组2：红伞vs黑伞——颜色冲突软化，预期只扣颜色维度约20分",
+        "lost": {
+          "title": "黑色长柄雨伞",
+          "description": "今天在5教401丢了一把黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "lost_time": "2026-09-07T10:00:00"
+        },
+        "found": {
+          "description": "今天在5教401捡到一把红色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "found_time": "2026-09-07T12:00:00"
+        }
+      },
+      {
+        "id": "G3-B",
+        "label": 1,
+        "note": "组3地点基准",
+        "lost": {
+          "title": "黑色长柄雨伞",
+          "description": "今天在5教401丢了一把黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "lost_time": "2026-09-07T10:00:00"
+        },
+        "found": {
+          "description": "今天在5教401捡到一把黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "found_time": "2026-09-07T12:00:00"
+        }
+      },
+      {
+        "id": "G3-C",
+        "label": 1,
+        "note": "组3：缺楼栋只写401——测地点四级命中的部分命中",
+        "lost": {
+          "title": "黑色长柄雨伞",
+          "description": "今天在5教401丢了一把黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "lost_time": "2026-09-07T10:00:00"
+        },
+        "found": {
+          "description": "今天在401捡到一把黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "401",
+          "found_time": "2026-09-07T12:00:00"
+        }
+      },
+      {
+        "id": "G3-D",
+        "label": 1,
+        "note": "组3：缺房间只写5教——测building级命中（v13修复项：building级跨侧包含）",
+        "lost": {
+          "title": "黑色长柄雨伞",
+          "description": "今天在5教401丢了一把黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "lost_time": "2026-09-07T10:00:00"
+        },
+        "found": {
+          "description": "今天在5教捡到一把黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "5教",
+          "found_time": "2026-09-07T12:00:00"
+        }
+      },
+      {
+        "id": "G4-B",
+        "label": 1,
+        "note": "组4数量基准",
+        "lost": {
+          "title": "黑色长柄雨伞",
+          "description": "今天在5教401丢了一把黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "lost_time": "2026-09-07T10:00:00"
+        },
+        "found": {
+          "description": "今天在5教401捡到一把黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "found_time": "2026-09-07T12:00:00"
+        }
+      },
+      {
+        "id": "G4-C",
+        "label": 0,
+        "note": "组4：两把vs一把——数量五档打分，预期扣数量维度（观察落在哪一档）",
+        "lost": {
+          "title": "黑色长柄雨伞",
+          "description": "今天在5教401丢了一把黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "lost_time": "2026-09-07T10:00:00"
+        },
+        "found": {
+          "description": "今天在5教401捡到两把黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "found_time": "2026-09-07T12:00:00"
+        }
+      },
+      {
+        "id": "G4-D",
+        "label": 0,
+        "note": "组4：三把vs一把——预期数量维度扣更多或归零",
+        "lost": {
+          "title": "黑色长柄雨伞",
+          "description": "今天在5教401丢了一把黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "lost_time": "2026-09-07T10:00:00"
+        },
+        "found": {
+          "description": "今天在5教401捡到三把黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "found_time": "2026-09-07T12:00:00"
+        }
+      },
+      {
+        "id": "G5-B",
+        "label": 1,
+        "note": "组5状态基准（全新）",
+        "lost": {
+          "title": "黑色长柄雨伞",
+          "description": "今天在5教401丢了一把黑色长柄雨伞，全新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "lost_time": "2026-09-07T10:00:00"
+        },
+        "found": {
+          "description": "今天在5教401捡到一把黑色长柄雨伞，全新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "found_time": "2026-09-07T12:00:00"
+        }
+      },
+      {
+        "id": "G5-C",
+        "label": 1,
+        "note": "组5：全新vs九成新——状态词是否算同族部分命中",
+        "lost": {
+          "title": "黑色长柄雨伞",
+          "description": "今天在5教401丢了一把黑色长柄雨伞，全新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "lost_time": "2026-09-07T10:00:00"
+        },
+        "found": {
+          "description": "今天在5教401捡到一把黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "found_time": "2026-09-07T12:00:00"
+        }
+      },
+      {
+        "id": "G5-D",
+        "label": 0,
+        "note": "组5：全新vs破损——状态强冲突，预期状态维度扣分明显",
+        "lost": {
+          "title": "黑色长柄雨伞",
+          "description": "今天在5教401丢了一把黑色长柄雨伞，全新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "lost_time": "2026-09-07T10:00:00"
+        },
+        "found": {
+          "description": "今天在5教401捡到一把黑色长柄雨伞，破损",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "found_time": "2026-09-07T12:00:00"
+        }
+      },
+      {
+        "id": "G6-B",
+        "label": 1,
+        "note": "组6关键词基准（金色星星图案）",
+        "lost": {
+          "title": "黑色长柄雨伞",
+          "description": "今天在5教401丢了一把黑色长柄雨伞，伞上有金色星星图案",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "lost_time": "2026-09-07T10:00:00"
+        },
+        "found": {
+          "description": "今天在5教401捡到一把黑色长柄雨伞，伞上有金色星星图案",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "found_time": "2026-09-07T12:00:00"
+        }
+      },
+      {
+        "id": "G6-C",
+        "label": 0,
+        "note": "组6：折叠vs长柄——伞型不同，预期关键词/类型词差异扣分",
+        "lost": {
+          "title": "黑色长柄雨伞",
+          "description": "今天在5教401丢了一把黑色长柄雨伞，伞上有金色星星图案",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "lost_time": "2026-09-07T10:00:00"
+        },
+        "found": {
+          "description": "今天在5教401捡到一把黑色折叠雨伞，伞上有金色星星图案",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "found_time": "2026-09-07T12:00:00"
+        }
+      },
+      {
+        "id": "G6-D",
+        "label": 1,
+        "note": "组6：无图案（可能同一把但描述丢失特征）——测关键词缺失时的中性处理",
+        "lost": {
+          "title": "黑色长柄雨伞",
+          "description": "今天在5教401丢了一把黑色长柄雨伞，伞上有金色星星图案",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "lost_time": "2026-09-07T10:00:00"
+        },
+        "found": {
+          "description": "今天在5教401捡到一把黑色长柄雨伞，伞上无图案",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "found_time": "2026-09-07T12:00:00"
+        }
+      },
+      {
+        "id": "G7-B",
+        "label": 1,
+        "note": "组7时间基准（同日）",
+        "lost": {
+          "title": "黑色长柄雨伞",
+          "description": "今天在5教401丢了一把黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "lost_time": "2026-09-07T10:00:00"
+        },
+        "found": {
+          "description": "今天在5教401捡到一把黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "found_time": "2026-09-07T12:00:00"
+        }
+      },
+      {
+        "id": "G7-C",
+        "label": 1,
+        "note": "组7：差1天——预期时间衰减约10×exp(-1/15)≈9.4/10",
+        "lost": {
+          "title": "黑色长柄雨伞",
+          "description": "今天在5教401丢了一把黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "lost_time": "2026-09-07T10:00:00"
+        },
+        "found": {
+          "description": "昨天在5教401捡到一把黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "found_time": "2026-09-06T12:00:00"
+        }
+      },
+      {
+        "id": "G7-D",
+        "label": 1,
+        "note": "组7：差约5-7天——预期时间衰减明显（≈10×exp(-7/15)≈6.3/10）",
+        "lost": {
+          "title": "黑色长柄雨伞",
+          "description": "今天在5教401丢了一把黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "lost_time": "2026-09-07T10:00:00"
+        },
+        "found": {
+          "description": "本周在5教401捡到一把黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "found_time": "2026-09-02T12:00:00"
+        }
+      },
+      {
+        "id": "G8-B",
+        "label": 1,
+        "note": "组8类目基准：类目完全一致（雨伞/雨伞）+ 其余维度全同——photo_category 满分档基准",
+        "lost": {
+          "title": "黑色长柄雨伞",
+          "description": "今天在5教401丢了一把黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "lost_time": "2026-09-07T10:00:00"
+        },
+        "found": {
+          "description": "今天在5教401捡到一把黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "found_time": "2026-09-07T12:00:00"
+        }
+      },
+      {
+        "id": "G8-C",
+        "label": 1,
+        "note": "组8：类目同族不同词（雨伞 vs 遮阳伞）——测类目家族近似档，预期类目维度给近似分而非归零",
+        "lost": {
+          "title": "黑色长柄雨伞",
+          "description": "今天在5教401丢了一把黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "lost_time": "2026-09-07T10:00:00"
+        },
+        "found": {
+          "description": "今天在5教401捡到一把黑色长柄遮阳伞，九成新",
+          "category_name": "遮阳伞",
+          "location": "5教401",
+          "found_time": "2026-09-07T12:00:00"
+        }
+      },
+      {
+        "id": "G8-D",
+        "label": 0,
+        "note": "组8：类目跨类（雨伞 vs 保温杯）——测 photo_category 归零；颜色/地点/时间/状态保持一致，差异集中在物品身份（类目+名词随类目自然变化，量词把→个为附带扰动）",
+        "lost": {
+          "title": "黑色长柄雨伞",
+          "description": "今天在5教401丢了一把黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "lost_time": "2026-09-07T10:00:00"
+        },
+        "found": {
+          "description": "今天在5教401捡到一个黑色保温杯，九成新",
+          "category_name": "保温杯",
+          "location": "5教401",
+          "found_time": "2026-09-07T12:00:00"
+        }
+      },
+      {
+        "id": "G9-B",
+        "label": 1,
+        "note": "组9口语化：词序乱+量词口语（一个vs一把）——测属性抽取鲁棒性",
+        "lost": {
+          "title": "黑色长柄雨伞",
+          "description": "今天在5教401丢了一把黑色长柄雨伞，伞上有金色星星图案，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "lost_time": "2026-09-07T10:00:00"
+        },
+        "found": {
+          "description": "一把雨伞，401，伞上面有金色星星",
+          "category_name": "雨伞",
+          "location": "401",
+          "found_time": "2026-09-07T12:00:00"
+        }
+      },
+      {
+        "id": "G9-C",
+        "label": 1,
+        "note": "组9口语化：只有颜色+楼栋——信息极少，测归一化和降档",
+        "lost": {
+          "title": "黑色长柄雨伞",
+          "description": "今天在5教401丢了一把黑色长柄雨伞，伞上有金色星星图案，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "lost_time": "2026-09-07T10:00:00"
+        },
+        "found": {
+          "description": "一把雨伞，5教，黑色",
+          "category_name": "雨伞",
+          "location": "5教",
+          "found_time": "2026-09-07T12:00:00"
+        }
+      },
+      {
+        "id": "G9-D",
+        "label": 1,
+        "note": "组9口语化：极简描述——信息最少组，预期归一化压低总分",
+        "lost": {
+          "title": "黑色长柄雨伞",
+          "description": "今天在5教401丢了一把黑色长柄雨伞，伞上有金色星星图案，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "lost_time": "2026-09-07T10:00:00"
+        },
+        "found": {
+          "description": "一把黑色雨伞，401",
+          "category_name": "雨伞",
+          "location": "401",
+          "found_time": "2026-09-07T12:00:00"
+        }
+      },
+      {
+        "id": "G10-B",
+        "label": 0,
+        "note": "组10异常：负数数量——测数量抽取器对'负一把'的容错（预期不崩）",
+        "lost": {
+          "title": "黑色长柄雨伞",
+          "description": "今天在5教401丢了一把黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "lost_time": "2026-09-07T10:00:00"
+        },
+        "found": {
+          "description": "今天在5教401捡到负一把黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "found_time": "2026-09-07T12:00:00"
+        }
+      },
+      {
+        "id": "G10-C",
+        "label": 0,
+        "note": "组10异常：字典外地点（火星）——测地点抽取对未知地点的降级",
+        "lost": {
+          "title": "黑色长柄雨伞",
+          "description": "今天在5教401丢了一把黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "lost_time": "2026-09-07T10:00:00"
+        },
+        "found": {
+          "description": "今天在火星捡到一把黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "火星",
+          "found_time": "2026-09-07T12:00:00"
+        }
+      },
+      {
+        "id": "G10-D",
+        "label": 1,
+        "note": "组10异常：时间格式错误（'时间格式错误'字面）——测时间解析容错与中性分",
+        "lost": {
+          "title": "黑色长柄雨伞",
+          "description": "今天在5教401丢了一把黑色长柄雨伞，九成新",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "lost_time": "2026-09-07T10:00:00"
+        },
+        "found": {
+          "description": "今天在5教401捡到一把黑色长柄雨伞，时间格式错误",
+          "category_name": "雨伞",
+          "location": "5教401",
+          "found_time": "2026-09-07T12:00:00"
+        }
+      }
+    ]
+  },
+  "dataset_blind": {
+    "key": "dataset_blind",
+    "title": "冻结盲测集 v1 (dataset_blind.json)",
+    "subtitle": "标注后即冻结，不参与任何权重或阈值调优决策，用于估计主集之外的泛化表现",
+    "size": 12,
+    "positives": 6,
+    "negatives": 6,
+    "frozen": true,
+    "designNotes": "正例：六类召回场景各一（强细节吻合/同族不同词/品牌推断/同日时近/数量吻合/地点粒度差）。负例：六类压制场景各一（同款不同细节/颜色冲突/时间远隔/数量不对称/品牌族冲突/地点矛盾）。全部为 v1 主集未出现的新实例。",
+    "pairs": [
+      {
+        "id": "B-P01",
+        "label": 1,
+        "note": "强细节吻合：保温杯（贴纸+凹痕+吸管）",
+        "lost": {
+          "title": "绿色保温杯",
+          "description": "墨绿色保温杯一个，杯身贴着一张青蛙贴纸，杯底有一处凹痕，配黑色提绳",
+          "category_name": "水杯",
+          "location": "图书馆一楼大厅",
+          "lost_time": "2026-09-10T09:30:00"
+        },
+        "found": {
+          "description": "一楼大厅自助机旁捡到墨绿色保温杯，青蛙贴纸，杯底有凹痕，黑色提绳",
+          "category_name": "保温杯",
+          "location": "图书馆一楼",
+          "found_time": "2026-09-10T11:00:00"
+        }
+      },
+      {
+        "id": "B-P02",
+        "label": 1,
+        "note": "同族不同词：饭卡 ↔ 餐卡（校园卡家族外的口径差）",
+        "lost": {
+          "title": "饭卡",
+          "description": "食堂饭卡一张，卡面照片脱胶翘边，卡号尾号 0917",
+          "category_name": "饭卡",
+          "location": "第二食堂二楼",
+          "lost_time": "2026-09-11T12:10:00"
+        },
+        "found": {
+          "description": "二餐二楼餐桌上捡到一张餐卡，照片翘边，尾号看着是 0917",
+          "category_name": "校园卡",
+          "location": "第二食堂",
+          "found_time": "2026-09-11T13:00:00"
+        }
+      },
+      {
+        "id": "B-P03",
+        "label": 1,
+        "note": "品牌推断：Redmi ↔ 红米（同色同细节）",
+        "lost": {
+          "title": "Redmi 手机",
+          "description": "红色 Redmi Note 一部，背面有指环扣，屏幕左上角有一道细裂纹",
+          "category_name": "手机",
+          "location": "操场西侧看台",
+          "lost_time": "2026-09-12T17:00:00"
+        },
+        "found": {
+          "description": "西看台捡到红色红米手机，带指环扣，左上角屏幕有裂纹",
+          "category_name": "手机",
+          "location": "操场",
+          "found_time": "2026-09-12T18:00:00"
+        }
+      },
+      {
+        "id": "B-P04",
+        "label": 1,
+        "note": "数量+内含物吻合：一副手套（左只在长椅、右只在草丛）",
+        "lost": {
+          "title": "灰色针织手套",
+          "description": "灰色针织手套一副，指尖露出式，右手那只腕口有个毛球",
+          "category_name": "手套",
+          "location": "教学楼喷泉广场",
+          "lost_time": "2026-09-13T08:20:00"
+        },
+        "found": {
+          "description": "喷泉广场长椅捡到灰色露指针织手套一只（右手，腕口有毛球），旁边草丛又找到另一只",
+          "category_name": "手套",
+          "location": "喷泉广场",
+          "found_time": "2026-09-13T09:00:00"
+        }
+      },
+      {
+        "id": "B-P05",
+        "label": 1,
+        "note": "地点粒度差（整栋楼 vs 具体教室）+ 内含物吻合",
+        "lost": {
+          "title": "英语词典",
+          "description": "英汉词典一本，书脊上写着班级缩写，里面夹着三张地铁卡贴纸",
+          "category_name": "笔记本",
+          "location": "第五教学楼",
+          "lost_time": "2026-09-14T10:00:00"
+        },
+        "found": {
+          "description": "五教 302 桌肚里捡到一本英汉词典，书脊有班级缩写，内夹三张地铁卡贴纸",
+          "category_name": "词典",
+          "location": "五教302",
+          "found_time": "2026-09-14T14:00:00"
+        }
+      },
+      {
+        "id": "B-P06",
+        "label": 1,
+        "note": "强细节吻合：蓝牙耳机仓（刻字+贴膜气泡）",
+        "lost": {
+          "title": "白色蓝牙耳机",
+          "description": "白色蓝牙耳机充电仓，仓盖内侧刻着名字缩写「CYT」，贴膜有一个气泡",
+          "category_name": "耳机",
+          "location": "篮球场",
+          "lost_time": "2026-09-15T18:30:00"
+        },
+        "found": {
+          "description": "篮球场边捡到白色蓝牙耳机仓，盖内刻字 CYT，贴膜有气泡",
+          "category_name": "耳机",
+          "location": "篮球场东半场",
+          "found_time": "2026-09-15T19:30:00"
+        }
+      },
+      {
+        "id": "B-N01",
+        "label": 0,
+        "note": "同款不同细节：同型号水壶但贴纸不同（刻字对不上）",
+        "lost": {
+          "title": "粉色保温壶",
+          "description": "粉色保温壶，壶身有小熊贴纸，壶盖内侧刻着生日 0521",
+          "category_name": "水杯",
+          "location": "图书馆三楼",
+          "lost_time": "2026-09-10T10:00:00"
+        },
+        "found": {
+          "description": "三楼捡到粉色保温壶，无贴纸，壶盖刻字是 1128，容量比描述大一圈",
+          "category_name": "保温杯",
+          "location": "图书馆三楼",
+          "found_time": "2026-09-10T11:00:00"
+        }
+      },
+      {
+        "id": "B-N02",
+        "label": 0,
+        "note": "颜色冲突：黑色 vs 米色（同款斜挎包）",
+        "lost": {
+          "title": "黑色斜挎包",
+          "description": "黑色帆布斜挎包，带金属圆环扣，内装一把小梳子",
+          "category_name": "包",
+          "location": "校医院候诊厅",
+          "lost_time": "2026-09-11T15:00:00"
+        },
+        "found": {
+          "description": "校医院捡到米色帆布斜挎包，金属圆环扣，里面有小梳子",
+          "category_name": "包",
+          "location": "校医院",
+          "found_time": "2026-09-11T16:00:00"
+        }
+      },
+      {
+        "id": "B-N03",
+        "label": 0,
+        "note": "时间远隔：同款台灯相隔 40 天（前一个已找回过一次）",
+        "lost": {
+          "title": "折叠台灯",
+          "description": "白色折叠充电台灯，三档触控，底座有轻微泛黄",
+          "category_name": "台灯",
+          "location": "宿舍区自习室",
+          "lost_time": "2026-09-12T20:00:00"
+        },
+        "found": {
+          "description": "自习室捡到白色折叠台灯，三档触控，底座泛黄",
+          "category_name": "台灯",
+          "location": "宿舍区自习室",
+          "found_time": "2026-08-03T21:00:00"
+        }
+      },
+      {
+        "id": "B-N04",
+        "label": 0,
+        "note": "数量不对称：丢一副耳机（双耳）捡到单只",
+        "lost": {
+          "title": "无线耳机",
+          "description": "黑色无线耳机一副（左右耳+充电仓），仓面有划痕十字",
+          "category_name": "耳机",
+          "location": "第一教学楼大厅",
+          "lost_time": "2026-09-13T12:00:00"
+        },
+        "found": {
+          "description": "一教大厅只捡到黑色单只右耳耳机（无充电仓），外观有划痕",
+          "category_name": "耳机",
+          "location": "一教",
+          "found_time": "2026-09-13T12:40:00"
+        }
+      },
+      {
+        "id": "B-N05",
+        "label": 0,
+        "note": "品牌族冲突：华为平板 vs iPad（同尺寸同色）",
+        "lost": {
+          "title": "iPad",
+          "description": "银色 iPad Air 平板，带紫色保护套，套背有星球图案",
+          "category_name": "平板",
+          "location": "实验楼204",
+          "lost_time": "2026-09-14T16:00:00"
+        },
+        "found": {
+          "description": "实验楼捡到银色华为 MatePad，紫色保护套，套背星球图案",
+          "category_name": "平板",
+          "location": "实验楼二楼",
+          "found_time": "2026-09-14T17:00:00"
+        }
+      },
+      {
+        "id": "B-N06",
+        "label": 0,
+        "note": "地点矛盾：南北两校区（同类同色校牌）",
+        "lost": {
+          "title": "校牌",
+          "description": "蓝色校牌一个，挂绳为红色编织款，姓名栏贴着打印贴纸",
+          "category_name": "校园卡",
+          "location": "南校区教学楼",
+          "lost_time": "2026-09-15T09:00:00"
+        },
+        "found": {
+          "description": "北校区图书馆门口捡到蓝色校牌，红色编织挂绳，姓名栏打印贴纸",
+          "category_name": "校园卡",
+          "location": "北校区图书馆",
+          "found_time": "2026-09-15T10:00:00"
+        }
+      }
+    ]
+  }
+}

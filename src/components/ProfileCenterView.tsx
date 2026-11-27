@@ -39,6 +39,7 @@ import {
   Star,
   Sparkles,
   LogOut,
+  BarChart3,
 } from 'lucide-react';
 import { signOutFirebase } from '../lib/firebase';
 import {
@@ -51,6 +52,7 @@ import {
   LostFoundItem,
   MatchRecord,
   MessageRecord,
+  RecognitionTask,
   UserProfile,
   UserReviewRecord,
   WalletTransaction,
@@ -66,6 +68,7 @@ import {
 } from '../services/firestoreService';
 import { ResilientItemImage } from './QrCodeSvg';
 import { ClaimsAndMessagesView } from './ClaimsAndMessagesView';
+import { AnalyticsDashboardView } from './AnalyticsDashboardView';
 import {
   cleanDisplayName,
   getCounterpartyUidForMessage,
@@ -87,6 +90,7 @@ interface ProfileCenterViewProps {
   onOpenUserProfile: (user: UserProfile) => void;
   allItems: LostFoundItem[];
   activeItems: LostFoundItem[];
+  tasks?: RecognitionTask[];
   matches: MatchRecord[];
   claims: ClaimRecord[];
   messages: MessageRecord[];
@@ -206,7 +210,8 @@ type SubPageKey =
   | 'history'
   | 'browsing_history'
   | 'wallet'
-  | 'claims';
+  | 'claims'
+  | 'analytics';
 
 type EditFieldKey =
   | 'nickname'
@@ -229,6 +234,7 @@ export const ProfileCenterView: React.FC<ProfileCenterViewProps> = ({
   onOpenUserProfile,
   allItems,
   activeItems,
+  tasks = [],
   matches,
   claims,
   messages,
@@ -2109,6 +2115,39 @@ export const ProfileCenterView: React.FC<ProfileCenterViewProps> = ({
   }
 
   // ============================================================================
+  // SUB-PAGE 3B: 数据可视化与模型评测看板 (Recharts + FastAPI + YOLO26n/OpenCLIP)
+  // ============================================================================
+  if (subPage === 'analytics') {
+    return (
+      <div className="space-y-3.5 pb-8">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl px-3.5 py-3 flex items-center justify-between border border-slate-200/70 dark:border-slate-800 shadow-2xs">
+          <button
+            type="button"
+            onClick={() => setSubPage('main')}
+            className="flex items-center gap-1 text-xs font-bold text-slate-800 dark:text-slate-100 hover:text-[#FF6B2C] cursor-pointer"
+          >
+            <ChevronLeft className="w-4 h-4 stroke-[2.5]" />
+            <span>返回我的</span>
+          </button>
+          <h2 className="text-sm font-black text-slate-950 dark:text-white">
+            数据可视化与模型评测看板
+          </h2>
+          <div className="w-12" />
+        </div>
+
+        <AnalyticsDashboardView
+          currentUser={currentUser}
+          items={allItems}
+          tasks={tasks}
+          onDataMutated={onDataMutated}
+        />
+
+        {renderSharedModals()}
+      </div>
+    );
+  }
+
+  // ============================================================================
   // SUB-PAGES 4..7: 我丢失的 | 我捡到的 | 历史发布 | 历史浏览 (独立二级页面)
   // ============================================================================
   if (
@@ -2542,6 +2581,30 @@ export const ProfileCenterView: React.FC<ProfileCenterViewProps> = ({
                 {currentUser.role === 'admin'
                   ? '审核认领申请与管理线下当面交接凭证'
                   : '查看认领进度与出示线下当面交接凭证'}
+              </div>
+            </div>
+          </div>
+          <ChevronRight className="w-4 h-4 text-slate-400" />
+        </button>
+      </div>
+
+      {/* 5. DATA VISUALIZATION & AI MODEL EVALUATION DASHBOARD CARD */}
+      <div className="bg-white dark:bg-slate-900 rounded-[24px] p-4 shadow-2xs border border-slate-100 dark:border-slate-800">
+        <button
+          type="button"
+          onClick={() => setSubPage('analytics')}
+          className="w-full flex items-center justify-between gap-3 cursor-pointer"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+              <BarChart3 className="w-5 h-5" />
+            </div>
+            <div className="text-left">
+              <div className="text-sm font-black text-slate-950 dark:text-white">
+                数据可视化与模型评测看板
+              </div>
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                YOLO26n + OpenCLIP 运行监测 · 校园分类/热力图表 · 三策略评测对比
               </div>
             </div>
           </div>

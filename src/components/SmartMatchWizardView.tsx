@@ -8,7 +8,7 @@
  *   - Automatically compares against existing Found/Lost posts; if no match fits, 1-click publishes the post.
  */
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Upload,
   Search,
@@ -45,6 +45,7 @@ import {
 } from '../services/firestoreService';
 import { executeThreeWayRecallAndRerank } from '../services/matchingEngine';
 import { ResilientItemImage } from './QrCodeSvg';
+import { AgentPublishDraft } from './AiAgentDrawer';
 
 type EvaluatedCandidate = ReturnType<typeof executeThreeWayRecallAndRerank>['matches'][number];
 
@@ -53,6 +54,8 @@ interface SmartMatchWizardViewProps {
   embeddings: ImageEmbedding[];
   matches: MatchRecord[];
   currentUser: UserProfile;
+  initialDraft?: AgentPublishDraft | null;
+  onDraftConsumed?: () => void;
   onDataMutated: () => Promise<void>;
   onOpenChatForItem: (itemId: string) => void;
   onOpenItemDetail: (item: LostFoundItem) => void;
@@ -71,6 +74,8 @@ export const SmartMatchWizardView: React.FC<SmartMatchWizardViewProps> = ({
   embeddings,
   matches,
   currentUser,
+  initialDraft,
+  onDraftConsumed,
   onDataMutated,
   onOpenChatForItem,
   onOpenItemDetail,
@@ -120,6 +125,31 @@ export const SmartMatchWizardView: React.FC<SmartMatchWizardViewProps> = ({
   const [publishedSuccessItem, setPublishedSuccessItem] = useState<LostFoundItem | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [draftItemId, setDraftItemId] = useState<string>(() => `item_lost_${Date.now()}`);
+
+  useEffect(() => {
+    if (!initialDraft) return;
+    setStepMode('form');
+    setRoleMode(initialDraft.type === 'found' ? 'found' : 'lost');
+    setTitle(initialDraft.title || '');
+    setDescription(initialDraft.description || '');
+    setCampusCategory(initialDraft.campusCategory || '数码电子');
+    setUserManuallySelectedCategory(true);
+    setColor(initialDraft.color || '');
+    setBrand(initialDraft.brand || '');
+    const validArea = CAMPUS_LOCATION_AREAS.includes(initialDraft.locationArea as CampusLocationArea)
+      ? (initialDraft.locationArea as CampusLocationArea)
+      : '其他';
+    setLocationArea(validArea);
+    setLocationDetail(initialDraft.locationDetail || '');
+    setRewardAmount(initialDraft.type === 'lost' ? Number(initialDraft.rewardAmount || 0) : 0);
+    setVerificationQuestion(initialDraft.verificationQuestion || '');
+    setDraftItemId(`item_${initialDraft.type}_${Date.now()}`);
+    setHasSearched(false);
+    setCandidateResults([]);
+    setPublishedSuccessItem(null);
+    setErrorMsg(null);
+    onDraftConsumed?.();
+  }, [initialDraft, onDraftConsumed]);
 
   const runQuickCategoryRecognition = async (opts: {
     b64?: string;

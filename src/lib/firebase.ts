@@ -1,78 +1,7 @@
 /**
- * Firebase Initialization, Anonymous Session Bootstrap, Error Handler, and Storage/EXIF Helper
+ * Local FastAPI Media, EXIF Stripping, SHA-256 Hashing & Session Helper
+ * (Replaces cloud Firebase SDK with 100% local FastAPI + SQLite/MySQL storage)
  */
-
-import { initializeApp } from 'firebase/app';
-import {
-  getAuth,
-  GoogleAuthProvider,
-  onAuthStateChanged,
-  signInAnonymously,
-  signInWithPopup,
-  signOut,
-} from 'firebase/auth';
-import { doc, getDocFromServer, getFirestore } from 'firebase/firestore';
-import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
-import firebaseConfig from '../firebase-applet-config.json';
-
-const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
-export const auth = getAuth(app);
-export const storage = getStorage(app);
-storage.maxUploadRetryTime = 3500;
-storage.maxOperationRetryTime = 3500;
-export const googleProvider = new GoogleAuthProvider();
-
-let anonymousUidCache: string | null = null;
-let sessionBootstrapPromise: Promise<string | null> | null = null;
-
-/**
- * Step 1: On app startup, if no Firebase user is signed in, sign in anonymously with Firebase Auth
- * (signInAnonymously) before any Firestore read/write, and keep the signed-in anonymous UID for
- * the demo session. Never presents anonymous sign-in as a real user identity in the UI.
- */
-export function ensureAnonymousOrActiveSession(): Promise<string | null> {
-  if (auth.currentUser) {
-    anonymousUidCache = auth.currentUser.uid;
-    return Promise.resolve(auth.currentUser.uid);
-  }
-  if (sessionBootstrapPromise) {
-    return sessionBootstrapPromise;
-  }
-
-  sessionBootstrapPromise = new Promise<string | null>((resolve) => {
-    const unsubscribe = onAuthStateChanged(
-      auth,
-      async (existingUser) => {
-        unsubscribe();
-        if (existingUser) {
-          anonymousUidCache = existingUser.uid;
-          resolve(existingUser.uid);
-          return;
-        }
-        try {
-          const cred = await signInAnonymously(auth);
-          anonymousUidCache = cred.user.uid;
-          resolve(cred.user.uid);
-        } catch {
-          // If Anonymous Auth provider is not toggled on in the Firebase project console yet,
-          // resolve cleanly so the demo session and server-seeded Firestore queries proceed without error.
-          resolve(anonymousUidCache);
-        }
-      },
-      () => {
-        unsubscribe();
-        resolve(anonymousUidCache);
-      }
-    );
-  });
-
-  return sessionBootstrapPromise;
-}
-
-export function getActiveSessionUid(): string | null {
-  return auth.currentUser?.uid || anonymousUidCache;
-}
 
 export enum OperationType {
   CREATE = 'create',
@@ -83,21 +12,16 @@ export enum OperationType {
   WRITE = 'write',
 }
 
-export interface FirestoreErrorInfo {
-  error: string;
-  operationType: OperationType;
-  path: string | null;
-  authInfo: {
-    userId?: string | null;
-    email?: string | null;
-    emailVerified?: boolean | null;
-    isAnonymous?: boolean | null;
-    tenantId?: string | null;
-    providerInfo?: {
-      providerId?: string | null;
-      email?: string | null;
-    }[];
-  };
+export const auth = {
+  currentUser: null as null | { uid: string; email?: string | null; isAnonymous?: boolean },
+};
+
+export async function ensureAnonymousOrActiveSession(): Promise<string | null> {
+  return 'local_campus_session';
+}
+
+export function getActiveSessionUid(): string | null {
+  return 'local_campus_session';
 }
 
 export function handleFirestoreError(
@@ -105,52 +29,29 @@ export function handleFirestoreError(
   operationType: OperationType,
   path: string | null
 ): never {
-  const errInfo: FirestoreErrorInfo = {
-    error: error instanceof Error ? error.message : String(error),
-    authInfo: {
-      userId: auth.currentUser?.uid || anonymousUidCache || 'demo_session',
-      email: auth.currentUser?.email,
-      emailVerified: auth.currentUser?.emailVerified,
-      isAnonymous: auth.currentUser?.isAnonymous ?? true,
-      tenantId: auth.currentUser?.tenantId,
-      providerInfo:
-        auth.currentUser?.providerData?.map((provider) => ({
-          providerId: provider.providerId,
-          email: provider.email,
-        })) || [],
-    },
-    operationType,
-    path,
+  const msg = error instanceof Error ? error.message : String(error);
+  console.error(`[API Error] ${operationType} ${path || ''}:`, msg);
+  throw new Error(msg);
+}
+
+export async function signInWithGooglePopup(): Promise<{
+  user: {
+    uid: string;
+    email?: string | null;
+    displayName?: string | null;
+    photoURL?: string | null;
   };
-  console.error('Firestore Error: ', JSON.stringify(errInfo));
-  throw new Error(JSON.stringify(errInfo));
+}> {
+  throw new Error('当前为本地 FastAPI 课程部署模式，请使用校园账号密码或顶部快捷角色登录。');
 }
 
-async function testConnection() {
-  try {
-    await ensureAnonymousOrActiveSession();
-    await getDocFromServer(doc(db, 'test', 'connection'));
-  } catch (error) {
-    if (error instanceof Error && error.message.includes('the client is offline')) {
-      console.error('Please check your Firebase configuration.');
-    }
-  }
-}
-testConnection();
-
-export async function signInWithGooglePopup() {
-  return signInWithPopup(auth, googleProvider);
-}
-
-export async function signOutFirebase() {
-  await signOut(auth);
-  sessionBootstrapPromise = null;
-  await ensureAnonymousOrActiveSession();
+export async function signOutFirebase(): Promise<void> {
+  return;
 }
 
 /**
- * P1-2(1) & P0-2(1): Validates image type/size, strips EXIF GPS/camera metadata via Canvas re-encoding,
- * and computes content SHA-256 hash before uploading to Cloud Storage.
+ * Validates image type/size, strips EXIF GPS/camera metadata via Canvas re-encoding,
+ * and computes content SHA-256 hash before uploading to FastAPI local storage.
  */
 export async function processImageExifAndSha256(file: File): Promise<{
   cleanBlob: Blob;
@@ -227,45 +128,39 @@ export async function processImageExifAndSha256(file: File): Promise<{
   }
 }
 
+/**
+ * Uploads EXIF-stripped cleaned image to local FastAPI backend (/api/uploads/image).
+ */
 export async function uploadCleanedImageToStorage(
   itemId: string,
   sha256: string,
-  cleanBlob: Blob,
+  _cleanBlob: Blob,
   fallbackDataUrl: string
 ): Promise<{ storagePath: string; imageUrl: string; uploadedToCloudStorage: boolean }> {
-  await ensureAnonymousOrActiveSession();
-  const storagePath = `items/${itemId}/${sha256.slice(0, 24)}.jpg`;
   try {
-    const storageRef = ref(storage, storagePath);
-    const uploadTaskPromise = (async () => {
-      await uploadBytes(storageRef, cleanBlob, {
-        contentType: 'image/jpeg',
-        customMetadata: {
-          sha256,
-          exifStripped: 'true',
-        },
-      });
-      const downloadUrl = await getDownloadURL(storageRef);
-      return {
-        storagePath,
-        imageUrl: downloadUrl,
-        uploadedToCloudStorage: true,
-      };
-    })();
-
-    const timeoutPromise = new Promise<{
-      storagePath: string;
-      imageUrl: string;
-      uploadedToCloudStorage: boolean;
-    }>((_, reject) => {
-      setTimeout(() => reject(new Error('Cloud Storage upload timeout (4s)')), 4000);
+    const resp = await fetch('/api/uploads/image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        itemId,
+        sha256,
+        base64Image: fallbackDataUrl,
+        mimeType: 'image/jpeg',
+      }),
     });
-
-    return await Promise.race([uploadTaskPromise, timeoutPromise]);
-  } catch (err) {
-    console.warn('Cloud Storage upload fallback (bucket rules or timeout):', err);
+    if (!resp.ok) {
+      throw new Error(`Upload failed (${resp.status})`);
+    }
+    const data = await resp.json();
     return {
-      storagePath,
+      storagePath: data.storagePath,
+      imageUrl: data.imageUrl,
+      uploadedToCloudStorage: true,
+    };
+  } catch (err) {
+    console.warn('Local image upload fallback to DataURL:', err);
+    return {
+      storagePath: `uploads/${itemId}_${sha256.slice(0, 24)}.jpg`,
       imageUrl: fallbackDataUrl,
       uploadedToCloudStorage: false,
     };

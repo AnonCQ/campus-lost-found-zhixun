@@ -1,0 +1,21 @@
+# Smart Campus Lost & Found System (FastAPI + SQLAlchemy + YOLO26n + OpenCLIP)
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+sqlalchemy>=2.0.36
+pydantic>=2.10.0
+python-multipart>=0.0.18
+python-dotenv>=1.0.1
+httpx>=0.28.0
+pymysql>=1.1.1
+
+# Deep Learning & Computer Vision (Install PyTorch with CUDA per local GPU)
+torch>=2.5.0
+torchvision>=0.20.0
+ultralytics>=8.4.0
+open-clip-torch>=2.29.0
+Pillow>=10.4.0
+numpy>=1.26.0
+scikit-learn>=1.5.0
+
+# Optional LLM Explanation Integration
+google-genai>=1.0.0

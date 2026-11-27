@@ -1,15 +1,15 @@
 /**
  * Core Domain Models, Constants, and Configurable Category Mapping
  *
- * CRITICAL MODEL RULE:
- * Every Gemini vision recognition and reasoning call uses GEMINI_MODEL = 'gemini-4-carbon'.
- * Image feature embeddings use the real multimodal embedding model EMBEDDING_MODEL_VERSION = 'gemini-embedding-2'
- * via ai.models.embedContent (3072D L2-normalized vectors from raw image bytes).
+ * Local Production Architecture:
+ * - Object Detection: Official Ultralytics YOLO26n (yolo26n.pt) + OpenCLIP ViT-B/32 Zero-Shot
+ * - Image Feature Embeddings: OpenCLIP ViT-B/32 (512D L2-normalized vectors from raw image bytes)
+ * - Backend & Database: Python FastAPI + SQLAlchemy (SQLite / MySQL)
  */
 
-export const GEMINI_MODEL = 'gemini-4-carbon' as const;
-export const EMBEDDING_MODEL_VERSION = 'gemini-embedding-2' as const;
-export const RECOGNITION_MODEL_VERSION = 'gemini-4-carbon-vision-v1' as const;
+export const GEMINI_MODEL = 'yolo26n+openclip-v1' as const;
+export const EMBEDDING_MODEL_VERSION = 'openclip-vit-b-32' as const;
+export const RECOGNITION_MODEL_VERSION = 'yolo26n+openclip-v1' as const;
 export const ALGORITHM_VERSION = 'v2.4-hybrid-3way' as const;
 export const ADMIN_WHITELIST_EMAIL = 'shx614519@gmail.com' as const;
 export const MAX_VECTOR_CANDIDATES = 100 as const;
